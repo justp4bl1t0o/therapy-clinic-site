@@ -702,22 +702,9 @@
           wyjaśnia proces zapisów i odpowiada na pytania pacjentów.
         </p>
 
-        <div class="chat-box" id="chatBox">
-          <div class="message bot">
-            Dzień dobry 👋 W czym mogę pomóc?
-          </div>
-
-          <div class="message user">
-            Chciałbym umówić konsultację dotyczącą autyzmu.
-          </div>
-
-          <div class="message bot">
-            Oczywiście. Mogę pomóc znaleźć najbliższy wolny termin oraz odpowiedniego specjalistę.
-          </div>
-
-          <div class="message bot">
-            Dostępne są konsultacje online i stacjonarne.
-          </div>
+<div class="message bot">
+  Dzień dobry 👋 W czym mogę pomóc?
+</div>
         </div>
 
 <div
@@ -809,27 +796,100 @@ function generateAIResponse(msg) {
 
   msg = msg.toLowerCase();
 
-  if(msg.includes('autyzm')) {
-    return 'Prowadzimy konsultacje i diagnozy dotyczące spektrum autyzmu.';
+  if(
+    msg.includes('autyzm') ||
+    msg.includes('spektrum')
+  ) {
+    return 'Prowadzimy konsultacje oraz diagnozy dotyczące spektrum autyzmu.';
   }
 
-  if(msg.includes('termin')) {
+  if(
+    msg.includes('termin') ||
+    msg.includes('wizyta')
+  ) {
     return 'Najbliższy wolny termin dostępny jest w środę o godzinie 11:00.';
   }
 
-  if(msg.includes('online')) {
-    return 'Tak 😊 Oferujemy również terapię online.';
+  if(
+    msg.includes('online')
+  ) {
+    return 'Tak 😊 Oferujemy również konsultacje online.';
   }
 
-  if(msg.includes('cena') || msg.includes('koszt')) {
+  if(
+    msg.includes('cena') ||
+    msg.includes('koszt')
+  ) {
     return 'Koszt konsultacji rozpoczyna się od 180 zł.';
   }
 
-  if(msg.includes('dziecko')) {
+  if(
+    msg.includes('dziecko')
+  ) {
     return 'Nasi specjaliści pracują również z dziećmi i młodzieżą.';
   }
 
-  return 'Dziękujemy za wiadomość. Nasz zespół postara się pomóc najlepiej jak to możliwe.';
+  showConsultantButtons();
+
+  return 'Czy chcesz żeby przekierować Cię do naszego konsultanta?';
+}
+function showConsultantButtons() {
+
+  const buttons = document.createElement('div');
+
+  buttons.style.display = 'flex';
+  buttons.style.gap = '10px';
+  buttons.style.marginTop = '12px';
+
+  buttons.innerHTML = `
+    <button id="yesConsultant"
+      style="
+        background:#22c55e;
+        color:white;
+        border:none;
+        padding:10px 16px;
+        border-radius:12px;
+        cursor:pointer;
+      "
+    >
+      Tak
+    </button>
+
+    <button id="noConsultant"
+      style="
+        background:#ef4444;
+        color:white;
+        border:none;
+        padding:10px 16px;
+        border-radius:12px;
+        cursor:pointer;
+      "
+    >
+      Nie
+    </button>
+  `;
+
+  chatBox.appendChild(buttons);
+
+  document.getElementById('yesConsultant').onclick = () => {
+
+    addMessage(
+      'Łączenie z konsultantem... Prosimy oczekiwać na odpowiedź specjalisty.',
+      'bot'
+    );
+
+    buttons.remove();
+  };
+
+  document.getElementById('noConsultant').onclick = () => {
+
+    addMessage(
+      'W porządku 😊 Czy mogę pomóc w czymś jeszcze?',
+      'bot'
+    );
+
+    buttons.remove();
+  };
 }
 
 function sendMessage() {
