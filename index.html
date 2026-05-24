@@ -692,138 +692,116 @@ Wyślij
 
 const form = document.getElementById('contactForm');
 
-form.addEventListener('submit', function(e){
-
+form.addEventListener('submit', (e) => {
   e.preventDefault();
 
   alert('Dziękujemy! Formularz został wysłany.');
 
   form.reset();
-
 });
 
 const sendBtn = document.getElementById('sendBtn');
 const aiInput = document.getElementById('aiInput');
 const chatBox = document.getElementById('chatBox');
 
-function addMessage(text,type){
+function addMessage(text, type){
 
-  const message = document.createElement('div');
+  const msg = document.createElement('div');
 
-  message.classList.add('message');
-  message.classList.add(type);
+  msg.className = `message ${type}`;
 
-  message.textContent = text;
+  msg.style.marginTop = '12px';
 
-  chatBox.appendChild(message);
+  msg.textContent = text;
+
+  chatBox.appendChild(msg);
 
   chatBox.scrollTop = chatBox.scrollHeight;
-
 }
 
-function showConsultantButtons(){
+function askConsultant(){
 
-  const buttons = document.createElement('div');
+  const wrapper = document.createElement('div');
 
-  buttons.style.display = 'flex';
-  buttons.style.gap = '10px';
-  buttons.style.marginTop = '12px';
+  wrapper.style.display = 'flex';
+  wrapper.style.gap = '10px';
+  wrapper.style.marginTop = '12px';
 
-  buttons.innerHTML = `
-  
-  <button id="yesConsultant"
-  style="
-  background:#22c55e;
-  color:white;
-  border:none;
-  padding:10px 16px;
-  border-radius:12px;
-  cursor:pointer;
-  ">
-  Tak
-  </button>
+  const yesBtn = document.createElement('button');
+  yesBtn.innerText = 'Tak';
 
-  <button id="noConsultant"
-  style="
-  background:#ef4444;
-  color:white;
-  border:none;
-  padding:10px 16px;
-  border-radius:12px;
-  cursor:pointer;
-  ">
-  Nie
-  </button>
+  yesBtn.style.background = '#22c55e';
+  yesBtn.style.color = 'white';
+  yesBtn.style.border = 'none';
+  yesBtn.style.padding = '10px 16px';
+  yesBtn.style.borderRadius = '12px';
+  yesBtn.style.cursor = 'pointer';
 
-  `;
+  const noBtn = document.createElement('button');
+  noBtn.innerText = 'Nie';
 
-  chatBox.appendChild(buttons);
+  noBtn.style.background = '#ef4444';
+  noBtn.style.color = 'white';
+  noBtn.style.border = 'none';
+  noBtn.style.padding = '10px 16px';
+  noBtn.style.borderRadius = '12px';
+  noBtn.style.cursor = 'pointer';
 
-  document.getElementById('yesConsultant').onclick = () => {
+  wrapper.appendChild(yesBtn);
+  wrapper.appendChild(noBtn);
+
+  chatBox.appendChild(wrapper);
+
+  yesBtn.onclick = () => {
 
     addMessage(
       'Łączenie z konsultantem... Nasz specjalista odpowie najszybciej jak to możliwe.',
       'bot'
     );
 
-    buttons.remove();
-
+    wrapper.remove();
   };
 
-  document.getElementById('noConsultant').onclick = () => {
+  noBtn.onclick = () => {
 
     addMessage(
       'W porządku 😊 Czy mogę pomóc w czymś jeszcze?',
       'bot'
     );
 
-    buttons.remove();
-
+    wrapper.remove();
   };
-
 }
 
-function generateAIResponse(msg){
+function generateAIResponse(message){
 
-  msg = msg.toLowerCase();
+  const msg = message.toLowerCase();
 
-  if(
-    msg.includes('autyzm') ||
-    msg.includes('spektrum')
-  ){
-    return 'Prowadzimy konsultacje oraz diagnozy dotyczące spektrum autyzmu.';
+  if(msg.includes('autyzm')){
+    return 'Prowadzimy konsultacje i diagnozy dotyczące spektrum autyzmu.';
   }
 
-  if(
-    msg.includes('termin') ||
-    msg.includes('wizyta')
-  ){
+  if(msg.includes('termin')){
     return 'Najbliższy wolny termin dostępny jest w środę o godzinie 11:00.';
   }
 
-  if(
-    msg.includes('online')
-  ){
-    return 'Tak 😊 Oferujemy również terapię online.';
+  if(msg.includes('online')){
+    return 'Tak 😊 Oferujemy również konsultacje online.';
   }
 
-  if(
-    msg.includes('cena') ||
-    msg.includes('koszt')
-  ){
+  if(msg.includes('cena') || msg.includes('koszt')){
     return 'Koszt konsultacji rozpoczyna się od 180 zł.';
   }
 
-  if(
-    msg.includes('dziecko')
-  ){
-    return 'Specjalizujemy się również w terapii dzieci i młodzieży.';
+  if(msg.includes('dziecko')){
+    return 'Prowadzimy również terapię dzieci i młodzieży.';
   }
 
-  showConsultantButtons();
+  setTimeout(() => {
+    askConsultant();
+  }, 500);
 
-  return 'Czy chcesz żeby przekierować Cię do naszego konsultanta?';
-
+  return 'Nie jestem pewien jak odpowiedzieć. Czy chcesz żeby przekierować Cię do konsultanta?';
 }
 
 function sendMessage(){
@@ -832,7 +810,7 @@ function sendMessage(){
 
   if(text === '') return;
 
-  addMessage(text,'user');
+  addMessage(text, 'user');
 
   aiInput.value = '';
 
@@ -840,15 +818,14 @@ function sendMessage(){
 
     const response = generateAIResponse(text);
 
-    addMessage(response,'bot');
+    addMessage(response, 'bot');
 
-  },700);
-
+  }, 700);
 }
 
-sendBtn.addEventListener('click',sendMessage);
+sendBtn.addEventListener('click', sendMessage);
 
-aiInput.addEventListener('keypress',function(e){
+aiInput.addEventListener('keydown', (e) => {
 
   if(e.key === 'Enter'){
     sendMessage();
