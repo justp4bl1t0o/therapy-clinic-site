@@ -702,7 +702,7 @@
           wyjaśnia proces zapisów i odpowiada na pytania pacjentów.
         </p>
 
-        <div class="chat-box">
+        <div class="chat-box" id="chatBox">
           <div class="message bot">
             Dzień dobry 👋 W czym mogę pomóc?
           </div>
@@ -720,9 +720,44 @@
           </div>
         </div>
 
-        <button class="btn" style="margin-top: 28px; width: 100%;">
-          Rozpocznij rozmowę
-        </button>
+<div
+  style="
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+  "
+>
+
+  <input
+    id="aiInput"
+    type="text"
+    placeholder="Napisz wiadomość..."
+    style="
+      flex:1;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      outline:none;
+      font-size:1rem;
+    "
+  />
+
+  <button
+    id="sendBtn"
+    style="
+      background:#3b82f6;
+      color:white;
+      border:none;
+      padding:14px 20px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:600;
+    "
+  >
+    Wyślij
+  </button>
+
+</div>
       </div>
     </div>
   </div>
@@ -735,141 +770,97 @@
 </footer>
 
 <script>
-  // =========================
-  // FORMULARZ
-  // =========================
 
-  const form = document.getElementById('contactForm');
+const form = document.getElementById('contactForm');
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
 
-    alert('Dziękujemy! Twoje zgłoszenie zostało wysłane.');
+  alert('Dziękujemy! Formularz został wysłany.');
 
-    form.reset();
-  });
+  form.reset();
+});
 
-  // =========================
-  // AI CHATBOT
-  // =========================
+// ======================
+// AI CHAT
+// ======================
 
-  const assistantBox = document.querySelector('.chat-box');
+const sendBtn = document.getElementById('sendBtn');
+const aiInput = document.getElementById('aiInput');
+const chatBox = document.getElementById('chatBox');
 
-  // Dodaj input i button dynamicznie
-  const chatControls = document.createElement('div');
-  chatControls.style.display = 'flex';
-  chatControls.style.gap = '10px';
-  chatControls.style.marginTop = '20px';
+function addMessage(text, type) {
 
-  chatControls.innerHTML = `
-    <input 
-      type="text" 
-      id="aiInput"
-      placeholder="Napisz wiadomość..."
-      style="
-        flex:1;
-        padding:14px;
-        border:none;
-        border-radius:14px;
-        outline:none;
-        font-size:1rem;
-      "
-    />
+  const message = document.createElement('div');
 
-    <button 
-      id="sendBtn"
-      style="
-        background:#3b82f6;
-        color:white;
-        border:none;
-        padding:14px 20px;
-        border-radius:14px;
-        cursor:pointer;
-        font-weight:600;
-      "
-    >
-      Wyślij
-    </button>
-  `;
+  message.classList.add('message');
+  message.classList.add(type);
 
-  document.querySelector('.assistant').appendChild(chatControls);
+  message.style.marginTop = '12px';
 
-  const aiInput = document.getElementById('aiInput');
-  const sendBtn = document.getElementById('sendBtn');
+  message.textContent = text;
 
-  function addMessage(text, type) {
-    const msg = document.createElement('div');
-    msg.classList.add('message');
-    msg.classList.add(type);
+  chatBox.appendChild(message);
 
-    msg.textContent = text;
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-    assistantBox.appendChild(msg);
+function generateAIResponse(msg) {
 
-    assistantBox.scrollTop = assistantBox.scrollHeight;
+  msg = msg.toLowerCase();
+
+  if(msg.includes('autyzm')) {
+    return 'Prowadzimy konsultacje i diagnozy dotyczące spektrum autyzmu.';
   }
 
-  function aiResponse(message) {
-    message = message.toLowerCase();
-
-    if (
-      message.includes('autyzm') ||
-      message.includes('spektrum')
-    ) {
-      return 'Oferujemy konsultacje diagnostyczne oraz terapię wspierającą osoby w spektrum autyzmu.';
-    }
-
-    if (
-      message.includes('cena') ||
-      message.includes('koszt')
-    ) {
-      return 'Koszt konsultacji zaczyna się od 180 zł za wizytę.';
-    }
-
-    if (
-      message.includes('online')
-    ) {
-      return 'Tak, prowadzimy również terapię online.';
-    }
-
-    if (
-      message.includes('termin')
-    ) {
-      return 'Najbliższy wolny termin dostępny jest w środę o 11:00.';
-    }
-
-    if (
-      message.includes('dziecko')
-    ) {
-      return 'Specjalizujemy się w terapii dzieci i młodzieży.';
-    }
-
-    return 'Dziękuję za wiadomość. Nasz specjalista skontaktuje się z Tobą wkrótce.';
+  if(msg.includes('termin')) {
+    return 'Najbliższy wolny termin dostępny jest w środę o godzinie 11:00.';
   }
 
-  function sendMessage() {
-    const text = aiInput.value.trim();
-
-    if (!text) return;
-
-    addMessage(text, 'user');
-
-    aiInput.value = '';
-
-    setTimeout(() => {
-      const response = aiResponse(text);
-
-      addMessage(response, 'bot');
-    }, 800);
+  if(msg.includes('online')) {
+    return 'Tak 😊 Oferujemy również terapię online.';
   }
 
-  sendBtn.addEventListener('click', sendMessage);
+  if(msg.includes('cena') || msg.includes('koszt')) {
+    return 'Koszt konsultacji rozpoczyna się od 180 zł.';
+  }
 
-  aiInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  });
+  if(msg.includes('dziecko')) {
+    return 'Nasi specjaliści pracują również z dziećmi i młodzieżą.';
+  }
+
+  return 'Dziękujemy za wiadomość. Nasz zespół postara się pomóc najlepiej jak to możliwe.';
+}
+
+function sendMessage() {
+
+  const text = aiInput.value.trim();
+
+  if(text === '') return;
+
+  addMessage(text, 'user');
+
+  aiInput.value = '';
+
+  setTimeout(() => {
+
+    const response = generateAIResponse(text);
+
+    addMessage(response, 'bot');
+
+  }, 700);
+}
+
+sendBtn.addEventListener('click', sendMessage);
+
+aiInput.addEventListener('keypress', function(e) {
+
+  if(e.key === 'Enter') {
+    sendMessage();
+  }
+
+});
+
 </script>
 
 </body>
