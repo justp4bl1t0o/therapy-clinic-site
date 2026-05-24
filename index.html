@@ -735,8 +735,9 @@
 </footer>
 
 <script>
-  // FORMULARZ — symulacja wysyłania zgłoszenia
-  // Możesz podłączyć np. Formspree / EmailJS / backend.
+  // =========================
+  // FORMULARZ
+  // =========================
 
   const form = document.getElementById('contactForm');
 
@@ -746,6 +747,128 @@
     alert('Dziękujemy! Twoje zgłoszenie zostało wysłane.');
 
     form.reset();
+  });
+
+  // =========================
+  // AI CHATBOT
+  // =========================
+
+  const assistantBox = document.querySelector('.chat-box');
+
+  // Dodaj input i button dynamicznie
+  const chatControls = document.createElement('div');
+  chatControls.style.display = 'flex';
+  chatControls.style.gap = '10px';
+  chatControls.style.marginTop = '20px';
+
+  chatControls.innerHTML = `
+    <input 
+      type="text" 
+      id="aiInput"
+      placeholder="Napisz wiadomość..."
+      style="
+        flex:1;
+        padding:14px;
+        border:none;
+        border-radius:14px;
+        outline:none;
+        font-size:1rem;
+      "
+    />
+
+    <button 
+      id="sendBtn"
+      style="
+        background:#3b82f6;
+        color:white;
+        border:none;
+        padding:14px 20px;
+        border-radius:14px;
+        cursor:pointer;
+        font-weight:600;
+      "
+    >
+      Wyślij
+    </button>
+  `;
+
+  document.querySelector('.assistant').appendChild(chatControls);
+
+  const aiInput = document.getElementById('aiInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  function addMessage(text, type) {
+    const msg = document.createElement('div');
+    msg.classList.add('message');
+    msg.classList.add(type);
+
+    msg.textContent = text;
+
+    assistantBox.appendChild(msg);
+
+    assistantBox.scrollTop = assistantBox.scrollHeight;
+  }
+
+  function aiResponse(message) {
+    message = message.toLowerCase();
+
+    if (
+      message.includes('autyzm') ||
+      message.includes('spektrum')
+    ) {
+      return 'Oferujemy konsultacje diagnostyczne oraz terapię wspierającą osoby w spektrum autyzmu.';
+    }
+
+    if (
+      message.includes('cena') ||
+      message.includes('koszt')
+    ) {
+      return 'Koszt konsultacji zaczyna się od 180 zł za wizytę.';
+    }
+
+    if (
+      message.includes('online')
+    ) {
+      return 'Tak, prowadzimy również terapię online.';
+    }
+
+    if (
+      message.includes('termin')
+    ) {
+      return 'Najbliższy wolny termin dostępny jest w środę o 11:00.';
+    }
+
+    if (
+      message.includes('dziecko')
+    ) {
+      return 'Specjalizujemy się w terapii dzieci i młodzieży.';
+    }
+
+    return 'Dziękuję za wiadomość. Nasz specjalista skontaktuje się z Tobą wkrótce.';
+  }
+
+  function sendMessage() {
+    const text = aiInput.value.trim();
+
+    if (!text) return;
+
+    addMessage(text, 'user');
+
+    aiInput.value = '';
+
+    setTimeout(() => {
+      const response = aiResponse(text);
+
+      addMessage(response, 'bot');
+    }, 800);
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  aiInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
   });
 </script>
 
